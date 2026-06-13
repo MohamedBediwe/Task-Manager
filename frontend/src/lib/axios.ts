@@ -5,9 +5,9 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Required for httpOnly cookies
 });
 
-// Optional: Add response interceptor for global error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {

@@ -18,6 +18,7 @@ interface TaskStore {
   setModalOpen: (open: boolean) => void;
   setEditingTask: (task: Task | null) => void;
   applyFilters: () => void;
+   setLoading: (loading: boolean) => void;
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -38,6 +39,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set({ tasks });
     get().applyFilters();
   },
+  setLoading: (isLoading) => set({ isLoading }),
 
   addTask: (task) => {
     const newTasks = [task, ...get().tasks];

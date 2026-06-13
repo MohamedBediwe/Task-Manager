@@ -1,4 +1,5 @@
 import express from 'express';
+import { protect } from '../middleware/authMiddleware';
 import {
   getTasks,
   getTask,
@@ -9,8 +10,10 @@ import {
 
 const router = express.Router();
 
-router.route('/').get(getTasks).post(createTask);
+// All task routes require authentication
+router.use(protect);
 
+router.route('/').get(getTasks).post(createTask);
 router.route('/:id').get(getTask).put(updateTask).delete(deleteTask);
 
 export default router;

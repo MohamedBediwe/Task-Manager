@@ -1,20 +1,22 @@
 'use client';
 
 import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
 import { Calendar, Pencil, Trash2 } from 'lucide-react';
 import { format, isPast, isToday } from 'date-fns';
 import { Task, TaskPriority, TaskCategory } from '@/types/task';
 import { useTaskStore } from '@/store/task-store';
+import { deleteTask as deleteTaskApi } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface TaskCardProps {
   task: Task;
+  isOverlay?: boolean;
 }
 
 const priorityStyles: Record<TaskPriority, string> = {
-  high: 'bg-red-500/15 text-red-400 border-red-500/20',
-  medium: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
-  low: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  high: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/20',
+  medium: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/20',
+  low: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/20',
 };
 
 const categoryBorder: Record<TaskCategory, string> = {
@@ -25,33 +27,36 @@ const categoryBorder: Record<TaskCategory, string> = {
 };
 
 const categoryBadge: Record<TaskCategory, string> = {
-  Work: 'bg-purple-500/15 text-purple-400 border-purple-500/20',
-  Personal: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  Learning: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
-  Health: 'bg-rose-500/15 text-rose-400 border-rose-500/20',
+  Work: 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/15 dark:text-purple-400 dark:border-purple-500/20',
+  Personal: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/15 dark:text-blue-400 dark:border-blue-500/20',
+  Learning: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/20',
+  Health: 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-400 dark:border-rose-500/20',
 };
 
-export default function TaskCard({ task }: TaskCardProps) {
+export default function TaskCard({ task, isOverlay = false }: TaskCardProps) {
   const { setEditingTask, setModalOpen, deleteTask } = useTaskStore();
 
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task._id,
+    disabled: isOverlay,
   });
 
-  const style = transform
-    ? {
-        transform: CSS.Transform.toString(transform),
-      }
-    : undefined;
-
   const handleEdit = () => {
+    if (isOverlay) return;
     setEditingTask(task);
     setModalOpen(true);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (isOverlay) return;
     if (window.confirm('Are you sure you want to delete this task?')) {
-      deleteTask(task._id);
+      try {
+        await deleteTaskApi(task._id);
+        deleteTask(task._id);
+        toast.success('Task deleted successfully');
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Failed to delete task');
+      }
     }
   };
 
@@ -61,20 +66,24 @@ export default function TaskCard({ task }: TaskCardProps) {
 
   const dueDateColor =
     task.dueDate && isPast(new Date(task.dueDate)) && !isToday(new Date(task.dueDate))
-      ? 'text-red-400'
+      ? 'text-red-600 dark:text-red-400'
       : task.dueDate && isToday(new Date(task.dueDate))
-      ? 'text-amber-400'
-      : 'text-gray-500';
+      ? 'text-amber-600 dark:text-amber-400'
+      : 'text-gray-500 dark:text-gray-500';
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className={`bg-gray-800/50 border border-white/10 rounded-xl p-4 hover:bg-gray-800 hover:border-white/20 hover:shadow-lg hover:shadow-black/20 transition-all ${categoryBorder[task.category]} border-l-4 ${isDragging ? 'opacity-50 rotate-2' : ''}`}
+      {...(!isOverlay ? listeners : {})}
+      {...(!isOverlay ? attributes : {})}
+      className={`bg-white border border-gray-200 rounded-xl p-4 transition-all dark:bg-gray-800/50 dark:border-white/10 ${categoryBorder[task.category]} border-l-4 
+        ${isOverlay 
+          ? 'shadow-2xl scale-[1.02] cursor-grabbing pointer-events-none' 
+          : 'hover:bg-gray-50 hover:border-gray-300 hover:shadow-md cursor-grab active:cursor-grabbing dark:hover:bg-gray-800 dark:hover:border-white/20 dark:hover:shadow-lg dark:hover:shadow-black/20'
+        }
+        ${!isOverlay && isDragging ? 'opacity-30' : 'opacity-100'}
+      `}
     >
-      {/* Top Row: Category + Priority */}
       <div className="flex items-center justify-between mb-2">
         <span className={`text-xs px-2 py-0.5 rounded-full border ${categoryBadge[task.category]}`}>
           {task.category}
@@ -84,14 +93,10 @@ export default function TaskCard({ task }: TaskCardProps) {
         </span>
       </div>
 
-      {/* Title */}
-      <h4 className="font-medium text-gray-100 mb-1 line-clamp-2">{task.title}</h4>
+      <h4 className="font-medium text-gray-900 mb-1 line-clamp-2 dark:text-gray-100">{task.title}</h4>
+      <p className="text-sm text-gray-600 line-clamp-2 mb-3 dark:text-gray-400">{task.description}</p>
 
-      {/* Description */}
-      <p className="text-sm text-gray-400 line-clamp-2 mb-3">{task.description}</p>
-
-      {/* Footer: Due Date + Actions */}
-      <div className="flex items-center justify-between pt-3 border-t border-white/5">
+      <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-white/5">
         <div className={`flex items-center gap-1.5 text-xs ${dueDateColor}`}>
           <Calendar className="w-3.5 h-3.5" />
           <span>{dueDateText}</span>
@@ -99,13 +104,13 @@ export default function TaskCard({ task }: TaskCardProps) {
         <div className="flex gap-1" onPointerDown={(e) => e.stopPropagation()}>
           <button
             onClick={handleEdit}
-            className="p-1.5 rounded-lg hover:bg-white/5 text-gray-500 hover:text-gray-300 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors dark:hover:bg-white/5 dark:text-gray-500 dark:hover:text-gray-300"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleDelete}
-            className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-400 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors dark:hover:bg-red-500/10 dark:text-gray-500 dark:hover:text-red-400"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>

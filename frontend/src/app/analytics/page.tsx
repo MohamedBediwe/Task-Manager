@@ -1,12 +1,12 @@
 import Sidebar from '@/components/sidebar';
-import DashboardClient from '@/components/dashboard-client';
+import AnalyticsClient from '@/components/analytics-client';
 
-export default function HomePage() {
+export default function AnalyticsPage() {
   return (
     <>
       <Sidebar />
       <main className="lg:ml-60 min-h-screen bg-white pt-16 lg:pt-0 dark:bg-gray-950">
-        <DashboardClient />
+        <AnalyticsClient />
       </main>
     </>
   );
