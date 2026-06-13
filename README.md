@@ -105,7 +105,7 @@ A full-stack Kanban task management application built with the **MERN stack** an
 ```bash
 git clone https://github.com/YOUR_USERNAME/task-manager.git
 cd task-manager
-
+---
 ###2. Backend Setup
 ```bash
 cd backend
@@ -116,37 +116,44 @@ PORT=5000
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/taskmanager?retryWrites=true&w=majority
 JWT_SECRET=your_super_secret_random_string
 FRONTEND_URL=http://localhost:3000
-
+---
 Start the server:
 ```bash
 npm run dev
-
-3. Frontend Setup
+---
+###3. Frontend Setup
 ```bash
 cd ../frontend
 npm install
-Create .env.local:
+---
+####Create .env.local:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
-Start the dev server:
+---
+####Start the dev server:
 ```bash
 npm run dev
+---
 Open http://localhost:3000
-Deployment
-Backend (Render / Railway)
+---
+###Deployment
+####Backend (Render / Railway)
 Connect GitHub repository
 Set root directory to backend/
 Add environment variables (MONGO_URI, JWT_SECRET, FRONTEND_URL)
-```Deploy
-Frontend (Vercel)
+Deploy
+---
+####Frontend (Vercel)
 Connect GitHub repository
 Set root directory to frontend/
 Add environment variable NEXT_PUBLIC_API_URL
 Deploy
+---
 Screenshots
 Table
 Dashboard (Dark)	Analytics	Mobile View
 screenshots/dashboard.png	screenshots/analytics.png	screenshots/mobile.png
+---
 ###What I Learned
 Next.js App Router — Server Components for initial data fetching, Client Components for interactivity
 Zustand — Lightweight global state management without Redux boilerplate
@@ -154,11 +161,9 @@ JWT + httpOnly Cookies — Secure authentication flow resistant to XSS attacks
 @dnd-kit — Accessible, modern drag-and-drop with keyboard support
 MongoDB Schema Design — Indexing strategies, enum validation, and relational data modeling in NoSQL
 Tailwind CSS v4 — New @import syntax, @custom-variant for dark mode, and CSS-first configuration
-License
-MIT
-
-Contact
-Your Mohamed Bediwe — [LinkedIn](https://www.linkedin.com/in/mohamed-bediwe-518596180/) — mohamed.bediwe@gmail.com
+---
+##Contact
+ Mohamed Bediwe — [LinkedIn](https://www.linkedin.com/in/mohamed-bediwe-518596180/) — mohamed.bediwe@gmail.com
 Project Link: https://github.com/MohamedBediwe/task-manager
 plain
 
