@@ -106,7 +106,8 @@ A full-stack Kanban task management application built with the **MERN stack** an
 git clone https://github.com/YOUR_USERNAME/task-manager.git
 cd task-manager
 
-2. Backend Setup
+###2. Backend Setup
+```bash
 cd backend
 npm install
 
@@ -115,19 +116,20 @@ PORT=5000
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/taskmanager?retryWrites=true&w=majority
 JWT_SECRET=your_super_secret_random_string
 FRONTEND_URL=http://localhost:3000
+
 Start the server:
-bash
+```bash
 npm run dev
 
 3. Frontend Setup
-bash
+```bash
 cd ../frontend
 npm install
 Create .env.local:
-env
+```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 Start the dev server:
-bash
+```bash
 npm run dev
 Open http://localhost:3000
 Deployment
@@ -135,7 +137,7 @@ Backend (Render / Railway)
 Connect GitHub repository
 Set root directory to backend/
 Add environment variables (MONGO_URI, JWT_SECRET, FRONTEND_URL)
-Deploy
+```Deploy
 Frontend (Vercel)
 Connect GitHub repository
 Set root directory to frontend/
@@ -145,7 +147,7 @@ Screenshots
 Table
 Dashboard (Dark)	Analytics	Mobile View
 screenshots/dashboard.png	screenshots/analytics.png	screenshots/mobile.png
-What I Learned
+###What I Learned
 Next.js App Router — Server Components for initial data fetching, Client Components for interactivity
 Zustand — Lightweight global state management without Redux boilerplate
 JWT + httpOnly Cookies — Secure authentication flow resistant to XSS attacks
