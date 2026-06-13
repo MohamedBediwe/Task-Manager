@@ -1,0 +1,8 @@
+{
+  "name": "task-manager-proxy",
+  "scripts": {
+    "postinstall": "cd backend && npm install",
+    "build": "cd backend && npm run build",
+    "start": "cd backend && npm start"
+  }
+}
